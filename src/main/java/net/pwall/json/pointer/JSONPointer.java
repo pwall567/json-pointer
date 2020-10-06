@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import net.pwall.json.JSONMapping;
 import net.pwall.json.JSONSequence;
 import net.pwall.json.JSONValue;
+import net.pwall.util.CharMapper;
 import net.pwall.util.CharUnmapper;
 import net.pwall.util.Strings;
 import net.pwall.util.URI;
@@ -71,63 +72,32 @@ public class JSONPointer {
      * Evaluate a JSON Pointer against a given JSON value.
      *
      * @param   base    the base value (path elements will be used to navigate from this point)
-     * @return          the value at that point
+     * @return          the value at that point (may be {@code null})
      * @throws          JSONPointerException if there are any errors in navigation
      */
     public JSONValue eval(JSONValue base) {
-        JSONValue result = base;
-        for (int i = 0, n = tokens.length; i < n; i++) {
-            String token = tokens[i];
-            if (result instanceof JSONMapping) {
-                JSONMapping<? extends JSONValue> resultMapping = (JSONMapping<? extends JSONValue>)result;
-                if (!resultMapping.containsKey(token))
-                    error(i + 1);
-                result = resultMapping.get(token);
-            }
-            else if (result instanceof JSONSequence) {
-                JSONSequence<? extends JSONValue> resultSequence = (JSONSequence<? extends JSONValue>)result;
-                final int ii = i + 1;
-                if (token.equals("-"))
-                    throw new JSONPointerException("Can't dereference end-of-array JSON Pointer " + toString(ii));
-                int index = checkIndex(token, () -> "Illegal array index in JSON Pointer " + toString(ii));
-                if (index < 0 || index >= resultSequence.size())
-                    throw new JSONPointerException("Array index out of range in JSON Pointer " + toString(ii));
-                result = resultSequence.get(index);
-            }
-            else
-                error( i + 1);
-        }
-        return result;
+        return find(tokens, base);
+    }
+
+    /**
+     * Find the value corresponding to the pointer in the given JSON value.
+     *
+     * @param   base    the base value (path elements will be used to navigate from this point)
+     * @return          the value at that point (may be {@code null})
+     * @throws          JSONPointerException if there are any errors in navigation
+     */
+    public JSONValue find(JSONValue base) {
+        return find(tokens, base);
     }
 
     /**
      * Test whether a value exists at a given path.
      *
      * @param   base    the base value (path elements will be used to navigate from this point)
-     * @return          {@code true} if a value exists
+     * @return          {@code true} if the value exists (including if it is {@code null})
      */
     public boolean exists(JSONValue base) {
-        JSONValue current = base;
-        for (String token : tokens) {
-            if (current instanceof JSONMapping) {
-                JSONMapping<? extends JSONValue> currentObject = (JSONMapping<? extends JSONValue>)current;
-                if (!currentObject.containsKey(token))
-                    return false;
-                current = currentObject.get(token);
-            }
-            else if (current instanceof JSONSequence) {
-                JSONSequence<? extends JSONValue> currentArray = (JSONSequence<? extends JSONValue>)current;
-                if (!checkNumber(token))
-                    return false;
-                int index = Integer.parseInt(token);
-                if (index < 0 || index >= currentArray.size())
-                    return false;
-                current = currentArray.get(index);
-            }
-            else
-                return false;
-        }
-        return true;
+        return exists(tokens, base);
     }
 
     /**
@@ -138,7 +108,7 @@ public class JSONPointer {
      */
     public JSONPointer parent() {
         if (tokens.length == 0)
-            throw new IllegalArgumentException("Can't get parent of root JSON Pointer");
+            throw new JSONPointerException("Can't get parent of root JSON Pointer");
         int n = tokens.length - 1;
         String[] newTokens = new String[n];
         System.arraycopy(tokens, 0, newTokens, 0, n);
@@ -168,7 +138,7 @@ public class JSONPointer {
      */
     public JSONPointer child(int index) {
         if (index < 0)
-            throw new IllegalArgumentException("JSON Pointer index must not be negative");
+            throw new JSONPointerException("JSON Pointer index must not be negative");
         return child(String.valueOf(index));
     }
 
@@ -227,7 +197,96 @@ public class JSONPointer {
      */
     @Override
     public String toString() {
-        return toString(tokens.length);
+        return toString(tokens, tokens.length);
+    }
+
+    /**
+     * Find the value corresponding to the pointer (as a {@link String}) in the given JSON value.
+     *
+     * @param   string  the pointer as a string
+     * @param   base    the base value (path elements will be used to navigate from this point)
+     * @return          the value at that point (may be {@code null})
+     * @throws          JSONPointerException if there are any errors in navigation
+     */
+    public static JSONValue find(String string, JSONValue base) {
+        return find(parse(Objects.requireNonNull(string)), base);
+    }
+
+    /**
+     * Find the value corresponding to the pointer (as an array of pointer elements) in the given JSON value.
+     *
+     * @param   tokens  the array of pointer elements
+     * @param   base    the base value (path elements will be used to navigate from this point)
+     * @return          the value at that point (may be {@code null})
+     * @throws          JSONPointerException if there are any errors in navigation
+     */
+    private static JSONValue find(String[] tokens, JSONValue base) {
+        JSONValue result = base;
+        for (int i = 0, n = tokens.length; i < n; i++) {
+            String token = tokens[i];
+            if (result instanceof JSONMapping) {
+                JSONMapping<?> resultMapping = (JSONMapping<?>)result;
+                if (!resultMapping.containsKey(token))
+                    error(tokens, i + 1);
+                result = resultMapping.get(token);
+            }
+            else if (result instanceof JSONSequence) {
+                JSONSequence<?> resultSequence = (JSONSequence<?>)result;
+                final int ii = i + 1;
+                if (token.equals("-"))
+                    throw new JSONPointerException("Can't dereference end-of-array JSON Pointer " +
+                            toString(tokens, ii));
+                int index = checkIndex(token, () -> "Illegal array index in JSON Pointer " + toString(tokens, ii));
+                if (index < 0 || index >= resultSequence.size())
+                    throw new JSONPointerException("Array index out of range in JSON Pointer " + toString(tokens, ii));
+                result = resultSequence.get(index);
+            }
+            else
+                error(tokens, i + 1);
+        }
+        return result;
+    }
+
+    /**
+     * Test whether a value exists at a given path (as a {@link String}).
+     *
+     * @param   string  the pointer as a string
+     * @param   base    the base value (path elements will be used to navigate from this point)
+     * @return          {@code true} if the value exists (including if it is {@code null})
+     */
+    public static boolean exists(String string, JSONValue base) {
+        return exists(parse(Objects.requireNonNull(string)), base);
+    }
+
+    /**
+     * Test whether a value exists at a given path (as an array of pointer elements).
+     *
+     * @param   tokens  the array of pointer elements
+     * @param   base    the base value (path elements will be used to navigate from this point)
+     * @return          {@code true} if the value exists (including if it is {@code null})
+     */
+    private static boolean exists(String[] tokens, JSONValue base) {
+        JSONValue current = base;
+        for (String token : tokens) {
+            if (current instanceof JSONMapping) {
+                JSONMapping<?> currentMapping = (JSONMapping<?>)current;
+                if (!currentMapping.containsKey(token))
+                    return false;
+                current = currentMapping.get(token);
+            }
+            else if (current instanceof JSONSequence) {
+                JSONSequence<?> currentSequence = (JSONSequence<?>)current;
+                if (!checkNumber(token))
+                    return false;
+                int index = Integer.parseInt(token);
+                if (index < 0 || index >= currentSequence.size())
+                    return false;
+                current = currentSequence.get(index);
+            }
+            else
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -236,7 +295,7 @@ public class JSONPointer {
      * @param   n       the number of element to be included
      * @return          the string representation of that portion of the pointer
      */
-    private String toString(int n) {
+    private static String toString(String[] tokens, int n) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++)
             sb.append('/').append(escapeToken(tokens[i]));
@@ -248,8 +307,8 @@ public class JSONPointer {
      *
      * @param   tokenIndex      the index of the pointer element in error
      */
-    private void error(int tokenIndex) {
-        throw new JSONPointerException("Can't resolve JSON Pointer " + toString(tokenIndex));
+    private static void error(String[] tokens, int tokenIndex) {
+        throw new JSONPointerException("Can't resolve JSON Pointer " + toString(tokens, tokenIndex));
     }
 
     /**
@@ -297,7 +356,7 @@ public class JSONPointer {
      * @return              the array of elements
      * @throws              JSONPointerException if the string does not start with a "/"
      */
-    public static String[] parse(String string) {
+    private static String[] parse(String string) {
         if (Objects.requireNonNull(string).length() == 0)
             return emptyArray;
         if (!string.startsWith("/"))
@@ -342,13 +401,7 @@ public class JSONPointer {
      * @return          the escaped token
      */
     public static String escapeToken(String token) {
-        return Strings.escape(token, codePoint -> {
-            if (codePoint == '~')
-                return "~0";
-            if (codePoint == '/')
-                return "~1";
-            return null;
-        });
+        return Strings.escape(token, mapper);
     }
 
     /**
@@ -360,6 +413,17 @@ public class JSONPointer {
     public static String unescapeToken(String str) {
         return Strings.unescape(str, unmapper);
     }
+
+    /**
+     * A {@link CharMapper} to assist with escaping JSON Pointers.
+     */
+    public static final CharMapper mapper = codePoint -> {
+        if (codePoint == '~')
+            return "~0";
+        if (codePoint == '/')
+            return "~1";
+        return null;
+    };
 
     /**
      * A {@link CharUnmapper} to assist with unescaping JSON Pointers.

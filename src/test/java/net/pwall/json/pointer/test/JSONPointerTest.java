@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import net.pwall.json.JSON;
 import net.pwall.json.JSONArray;
 import net.pwall.json.JSONInteger;
+import net.pwall.json.JSONObject;
 import net.pwall.json.JSONString;
 import net.pwall.json.JSONValue;
 import net.pwall.json.pointer.JSONPointer;
@@ -72,6 +74,38 @@ public class JSONPointerTest {
         assertEquals(new JSONInteger(6), createPointer("/k\"l").eval(document));
         assertEquals(new JSONInteger(7), createPointer("/ ").eval(document));
         assertEquals(new JSONInteger(8), createPointer("/m~0n").eval(document));
+    }
+
+    @Test
+    public void shouldGiveResultsShownInExampleInSpecificationUsingFind() {
+        assertSame(document, createPointer("").find(document));
+        assertEquals(array1, createPointer("/foo").find(document));
+        assertEquals(string1, createPointer("/foo/0").find(document));
+        assertEquals(new JSONInteger(0), createPointer("/").find(document));
+        assertEquals(new JSONInteger(1), createPointer("/a~1b").find(document));
+        assertEquals(new JSONInteger(2), createPointer("/c%d").find(document));
+        assertEquals(new JSONInteger(3), createPointer("/e^f").find(document));
+        assertEquals(new JSONInteger(4), createPointer("/g|h").find(document));
+        assertEquals(new JSONInteger(5), createPointer("/i\\j").find(document));
+        assertEquals(new JSONInteger(6), createPointer("/k\"l").find(document));
+        assertEquals(new JSONInteger(7), createPointer("/ ").find(document));
+        assertEquals(new JSONInteger(8), createPointer("/m~0n").find(document));
+    }
+
+    @Test
+    public void shouldGiveResultsShownInExampleInSpecificationUsingStaticMethod() {
+        assertSame(document, JSONPointer.find("", document));
+        assertEquals(array1, JSONPointer.find("/foo", document));
+        assertEquals(string1, JSONPointer.find("/foo/0", document));
+        assertEquals(new JSONInteger(0), JSONPointer.find("/", document));
+        assertEquals(new JSONInteger(1), JSONPointer.find("/a~1b", document));
+        assertEquals(new JSONInteger(2), JSONPointer.find("/c%d", document));
+        assertEquals(new JSONInteger(3), JSONPointer.find("/e^f", document));
+        assertEquals(new JSONInteger(4), JSONPointer.find("/g|h", document));
+        assertEquals(new JSONInteger(5), JSONPointer.find("/i\\j", document));
+        assertEquals(new JSONInteger(6), JSONPointer.find("/k\"l", document));
+        assertEquals(new JSONInteger(7), JSONPointer.find("/ ", document));
+        assertEquals(new JSONInteger(8), JSONPointer.find("/m~0n", document));
     }
 
     @Test
@@ -132,6 +166,45 @@ public class JSONPointerTest {
         assertTrue(createPointer("/foo/1").exists(document));
         assertFalse(createPointer("/foo/2").exists(document));
         assertFalse(createPointer("/fool").exists(document));
+    }
+
+    @Test
+    public void shouldTestWhetherPointerExistsUsingStaticMethod() {
+        assertTrue(JSONPointer.exists("/foo", document));
+        assertTrue(JSONPointer.exists("/foo/0", document));
+        assertTrue(JSONPointer.exists("/foo/1", document));
+        assertFalse(JSONPointer.exists("/foo/2", document));
+        assertFalse(JSONPointer.exists("/fool", document));
+    }
+
+    @Test
+    public void shouldHandleNullObjectPropertiesCorrectly() {
+        JSONObject object = new JSONObject();
+        object.putValue("nonNullValue", "OK");
+        object.putNull("nullValue");
+        assertEquals(new JSONString("OK"), createPointer("/nonNullValue").find(object));
+        assertEquals(new JSONString("OK"), JSONPointer.find("/nonNullValue", object));
+        assertTrue(createPointer("/nonNullValue").exists(object));
+        assertTrue(JSONPointer.exists("/nonNullValue", object));
+        assertNull(createPointer("/nullValue").find(object));
+        assertNull(JSONPointer.find("/nullValue", object));
+        assertTrue(createPointer("/nullValue").exists(object));
+        assertTrue(JSONPointer.exists("/nullValue", object));
+    }
+
+    @Test
+    public void shouldHandleNullArrayItemsCorrectly() {
+        JSONArray array = new JSONArray();
+        array.addValue("OK");
+        array.addNull();
+        assertEquals(new JSONString("OK"), createPointer("/0").find(array));
+        assertEquals(new JSONString("OK"), JSONPointer.find("/0", array));
+        assertTrue(createPointer("/0").exists(array));
+        assertTrue(JSONPointer.exists("/0", array));
+        assertNull(createPointer("/1").find(array));
+        assertNull(JSONPointer.find("/1", array));
+        assertTrue(createPointer("/1").exists(array));
+        assertTrue(JSONPointer.exists("/1", array));
     }
 
     @Test
