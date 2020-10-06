@@ -53,11 +53,11 @@ The latest version of the library is 0.1, and it may be obtained from the Maven 
 ```
 ### Gradle
 ```groovy
-    testImplementation 'net.pwall.json:json-pointer:0.1'
+    implementation 'net.pwall.json:json-pointer:0.1'
 ```
 ### Gradle (kts)
 ```kotlin
-    testImplementation("net.pwall.json:json-pointer:0.1")
+    implementation("net.pwall.json:json-pointer:0.1")
 ```
 
 Peter Wall
