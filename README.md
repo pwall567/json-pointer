@@ -1,5 +1,9 @@
 # json-pointer
 
+[![Build Status](https://travis-ci.org/pwall567/json-pointer.svg?branch=main)](https://travis-ci.org/pwall567/json-pointer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Maven Central](https://img.shields.io/maven-central/v/net.pwall.json/json-pointer?label=Maven%20Central)](https://search.maven.org/search?q=g:%22net.pwall.json%22%20AND%20a:%22json-pointer%22)
+
 Java implementation of JSON Pointer
 
 ## Quick Start
@@ -19,7 +23,7 @@ To test whether such an element exists in the JSON object "obj":
 
 To retrieve the element:
 ```java
-    JSONValue value = pointer.eval(obj);
+    JSONValue value = pointer.find(obj);
 ```
 
 A pointer to the root element of any JSON value:
@@ -41,25 +45,25 @@ To navigate to a child array element:
 
 ## Dependency Specification
 
-The latest version of the library is 0.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>0.2</version>
+      <version>1.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:0.2'
+    implementation 'net.pwall.json:json-pointer:1.0'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:0.2")
+    implementation("net.pwall.json:json-pointer:1.0")
 ```
 
 Peter Wall
 
-2020-10-06
+2020-11-22
