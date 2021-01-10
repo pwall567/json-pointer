@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://img.shields.io/maven-central/v/net.pwall.json/json-pointer?label=Maven%20Central)](https://search.maven.org/search?q=g:%22net.pwall.json%22%20AND%20a:%22json-pointer%22)
 
-Java implementation of JSON Pointer
+Java implementation of [JSON Pointer](https://tools.ietf.org/html/rfc6901).
 
 ## Quick Start
 
@@ -66,4 +66,4 @@ The latest version of the library is 1.0, and it may be obtained from the Maven 
 
 Peter Wall
 
-2020-11-22
+2021-01-10
