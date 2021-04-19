@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.pwall.json</groupId>
   <artifactId>json-pointer</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
   <name>JSON Pointer</name>
   <description>Java implementation of JSON Pointer</description>
   <packaging>jar</packaging>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>jsonutil</artifactId>
-      <version>4.1</version>
+      <version>5.0</version>
     </dependency>
     <dependency>
       <groupId>net.pwall.util</groupId>
