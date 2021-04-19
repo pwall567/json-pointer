@@ -45,23 +45,23 @@ To navigate to a child array element:
 
 ## Dependency Specification
 
-The latest version of the library is 1.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.1.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>1.1</version>
+      <version>1.1.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:1.1'
+    implementation 'net.pwall.json:json-pointer:1.1.1'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:1.1")
+    implementation("net.pwall.json:json-pointer:1.1.1")
 ```
 
 Peter Wall
