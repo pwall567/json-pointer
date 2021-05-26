@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.0] - 2021-05-13
+### Added
+- `JSONReference`: new
+
 ## [1.1.1] - 2021-04-19
 ### Changed
 - `pom.xml`: bumped another dependency version

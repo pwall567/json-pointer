@@ -43,26 +43,26 @@ import net.pwall.util.URI;
  */
 public class JSONPointer {
 
-    private static final String[] emptyArray = new String[0];
+    protected static final String[] emptyArray = {};
 
     public static final JSONPointer root = new JSONPointer(emptyArray);
 
     private final String[] tokens;
 
     /**
-     * Private constructor (used by {@link #parent()} and {@link #child(int)}/{@link #child(String)} methods.
+     * Private constructor (used by {@link #parent()} and {@link #child(int)}/{@link #child(String)} methods).
      *
      * @param   tokens  a list of tokens
      */
-    private JSONPointer(String[] tokens) {
+    protected JSONPointer(String[] tokens) {
         this.tokens = Objects.requireNonNull(tokens);
     }
 
     /**
      * Main constructor - creates a {@code JSONPointer} using the specified path.
      *
-     * @param   string      the path
-     * @throws              JSONPointerException if the string does not start with a "/"
+     * @param   string  the path
+     * @throws          JSONPointerException if the string is not either an empty string, or starts with "/"
      */
     public JSONPointer(String string) {
         this(parse(Objects.requireNonNull(string)));
@@ -139,7 +139,28 @@ public class JSONPointer {
     public JSONPointer child(int index) {
         if (index < 0)
             throw new JSONPointerException("JSON Pointer index must not be negative");
-        return child(String.valueOf(index));
+        return child(Integer.toString(index));
+    }
+
+    /**
+     * Get this pointer as a simple {@code JSONPointer}.  Classes that derive from this class (notably
+     * {@link JSONReference} may override this function to return a simple {@code JSONPointer}.
+     *
+     * @return  this pointer
+     */
+    public JSONPointer getPointer() {
+        return this;
+    }
+
+    /**
+     * Get the current token, i.e. the property name or index that this pointer points to at the lowest level.  Returns
+     * {@code null} in the case of the root pointer.
+     *
+     * @return      the property name or array item index, or {@code null} if this is the root pointer
+     */
+    public String getCurrent() {
+        int n = tokens.length;
+        return n == 0 ? null : tokens[n - 1];
     }
 
     /**
@@ -153,6 +174,15 @@ public class JSONPointer {
         for (String token : tokens)
             sb.append('/').append(encodeURI(escapeToken(token)));
         return sb.toString();
+    }
+
+    /**
+     * Get the array of tokens for this pointer.
+     *
+     * @return      the array of tokens
+     */
+    public String[] getTokens() {
+        return tokens;
     }
 
     /**
@@ -352,11 +382,11 @@ public class JSONPointer {
     /**
      * Parse a pointer string into an array of pointer elements.
      *
-     * @param   string      the original string
-     * @return              the array of elements
-     * @throws              JSONPointerException if the string does not start with a "/"
+     * @param   string  the original string
+     * @return          the array of elements
+     * @throws          JSONPointerException if the string is not either an empty string, or starts with "/"
      */
-    private static String[] parse(String string) {
+    protected static String[] parse(String string) {
         if (Objects.requireNonNull(string).length() == 0)
             return emptyArray;
         if (!string.startsWith("/"))

@@ -266,6 +266,14 @@ public class JSONPointerTest {
         assertEquals("Array index out of range in JSON Pointer /99", exception.getMessage());
     }
 
+    @Test
+    public void shouldGetCurrentToken() {
+        assertEquals("second", createPointer("/first/second").getCurrent());
+        assertEquals("first", createPointer("/first/second").parent().getCurrent());
+        assertEquals("2", createPointer("/first/2").getCurrent());
+        assertNull(JSONPointer.root.getCurrent());
+    }
+
     private static JSONPointer createPointer(String str) {
         return new JSONPointer(str);
     }

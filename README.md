@@ -42,28 +42,64 @@ To navigate to a child array element:
 ```
 (the result of the last two operations is a pointer equivalent to the pointer in the first example).
 
+## `JSONReference`
+
+A `JSONReference` is a combination of a `JSONPointer` and a `JSONValue`.
+This can be valuable when navigating around a complex tree - it removes the necessity to pass around both a pointer and
+the base value to which it refers, and it pre-calculates the destination value (and its validity).
+
+To create a `JSONReference`:
+```java
+    JSONReference ref = new JSONReference(base, pointer);
+```
+
+If the pointer is to the root element it may be omitted:
+```java
+    JSONReference ref = new JSONReference(base);
+```
+
+The `parent()` and `child()` operations work on `JSONReference`s similarly to the `JSONPointer` equivalents.
+
+To get the value from the `JSONReference`:
+```java
+    JSONValue value = ref.getValue(); // may be null
+```
+
+To test whether the reference is valid, that is, the pointer refers to a valid location in the base object:
+```java
+    if (ref.isValid()) {
+        // the reference can be take to be valid
+    }
+```
+
+To test whether the reference has a nominated child:
+```java
+    if (ref.hasChild(name)) { // or index
+        // use child ref.child(name)
+    }
+```
 
 ## Dependency Specification
 
-The latest version of the library is 1.1.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>1.1.1</version>
+      <version>2.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:1.1.1'
+    implementation 'net.pwall.json:json-pointer:2.0'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:1.1.1")
+    implementation("net.pwall.json:json-pointer:2.0")
 ```
 
 Peter Wall
 
-2021-04-19
+2021-05-26
