@@ -45,8 +45,8 @@ To navigate to a child array element:
 ## `JSONReference`
 
 A `JSONReference` is a combination of a `JSONPointer` and a `JSONValue`.
-This can be valuable when navigating around a complex tree - it removes the necessity to pass around both a pointer and
-the base value to which it refers, and it pre-calculates the destination value (and its validity).
+This can be valuable when navigating around a complex tree &ndash; it removes the necessity to pass around both a
+pointer and the base value to which it refers, and it pre-calculates the destination value (and its validity).
 
 To create a `JSONReference`:
 ```java
@@ -81,25 +81,25 @@ To test whether the reference has a nominated child:
 
 ## Dependency Specification
 
-The latest version of the library is 2.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>2.0</version>
+      <version>2.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:2.0'
+    implementation 'net.pwall.json:json-pointer:2.1'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:2.0")
+    implementation("net.pwall.json:json-pointer:2.1")
 ```
 
 Peter Wall
 
-2021-05-26
+2021-06-01

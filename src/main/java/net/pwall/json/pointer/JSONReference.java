@@ -88,7 +88,7 @@ public class JSONReference extends JSONPointer {
      * @param   pointer a {@link JSONPointer} to a node within the base value
      */
     public JSONReference(JSONValue base, JSONPointer pointer) {
-        this(base, pointer.getTokens());
+        this(base, checkNotNull(pointer).getTokens());
     }
 
     /**
@@ -99,15 +99,16 @@ public class JSONReference extends JSONPointer {
      * @throws          JSONPointerException if the string is not either an empty string, or starts with "/"
      */
     public JSONReference(JSONValue base, String string) {
-        this(base, parse(string));
+        this(base, parse(checkNotNull(string)));
     }
 
     /**
      * Create a JSON Reference using the given base JSON value and a root pointer.
+     *
      * @param   base    the base {@link JSONValue}
      */
     public JSONReference(JSONValue base) {
-        this(base, emptyArray, true, base);
+        this(base, emptyArray, base != null, base);
     }
 
     /**
@@ -157,6 +158,7 @@ public class JSONReference extends JSONPointer {
      * @return      {@code true} iff that child exists
      */
     public boolean hasChild(String name) {
+        checkNotNull(name);
         return valid && value instanceof JSONMapping && ((JSONMapping<?>)value).containsKey(name);
     }
 
@@ -196,6 +198,7 @@ public class JSONReference extends JSONPointer {
      */
     @Override
     public JSONReference child(String name) {
+        checkNotNull(name);
         String[] tokens = getTokens();
         int n = tokens.length;
         String[] newTokens = new String[n + 1];

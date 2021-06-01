@@ -2,7 +2,7 @@
  * @(#) JSONPointer.java
  *
  * json-pointer  Java implementation of JSON Pointer
- * Copyright (c) 2020 Peter Wall
+ * Copyright (c) 2020, 2021 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 
 package net.pwall.json.pointer;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import net.pwall.json.JSONMapping;
@@ -55,7 +54,7 @@ public class JSONPointer {
      * @param   tokens  a list of tokens
      */
     protected JSONPointer(String[] tokens) {
-        this.tokens = Objects.requireNonNull(tokens);
+        this.tokens = tokens;
     }
 
     /**
@@ -65,7 +64,7 @@ public class JSONPointer {
      * @throws          JSONPointerException if the string is not either an empty string, or starts with "/"
      */
     public JSONPointer(String string) {
-        this(parse(Objects.requireNonNull(string)));
+        this(parse(checkNotNull(string)));
     }
 
     /**
@@ -122,7 +121,7 @@ public class JSONPointer {
      * @return              a pointer to the child element
      */
     public JSONPointer child(String string) {
-        Objects.requireNonNull(string);
+        checkNotNull(string);
         String[] newTokens = new String[tokens.length + 1];
         System.arraycopy(tokens, 0, newTokens, 0, tokens.length);
         newTokens[tokens.length] = string;
@@ -239,7 +238,7 @@ public class JSONPointer {
      * @throws          JSONPointerException if there are any errors in navigation
      */
     public static JSONValue find(String string, JSONValue base) {
-        return find(parse(Objects.requireNonNull(string)), base);
+        return find(parse(checkNotNull(string)), base);
     }
 
     /**
@@ -285,7 +284,7 @@ public class JSONPointer {
      * @return          {@code true} if the value exists (including if it is {@code null})
      */
     public static boolean exists(String string, JSONValue base) {
-        return exists(parse(Objects.requireNonNull(string)), base);
+        return exists(parse(checkNotNull(string)), base);
     }
 
     /**
@@ -297,6 +296,8 @@ public class JSONPointer {
      */
     private static boolean exists(String[] tokens, JSONValue base) {
         JSONValue current = base;
+        if (current == null)
+            return false;
         for (String token : tokens) {
             if (current instanceof JSONMapping) {
                 JSONMapping<?> currentMapping = (JSONMapping<?>)current;
@@ -380,6 +381,20 @@ public class JSONPointer {
     }
 
     /**
+     * Check that a user-supplied parameter is not {@code null}.
+     *
+     * @param   value   the parameter
+     * @param   <T>     the type of the parameter
+     * @return          the value, if it is not {@code null}
+     * @throws  NullPointerException if the value is {@code null}
+     */
+    protected static <T> T checkNotNull(T value) {
+        if (value == null)
+            throw new NullPointerException("pointer value must not be null");
+        return value;
+    }
+
+    /**
      * Parse a pointer string into an array of pointer elements.
      *
      * @param   string  the original string
@@ -387,7 +402,7 @@ public class JSONPointer {
      * @throws          JSONPointerException if the string is not either an empty string, or starts with "/"
      */
     protected static String[] parse(String string) {
-        if (Objects.requireNonNull(string).length() == 0)
+        if (checkNotNull(string).length() == 0)
             return emptyArray;
         if (!string.startsWith("/"))
             throw new JSONPointerException("Illegal JSON Pointer " + string);

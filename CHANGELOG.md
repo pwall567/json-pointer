@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.1] - 2021-06-01
+### Changed
+- `JSONPointer`, `JSONReference`: changed to treat dereferencing of null as invalid
+
 ## [2.0] - 2021-05-13
 ### Added
 - `JSONReference`: new

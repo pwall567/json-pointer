@@ -2,7 +2,7 @@
  * @(#) JSONPointerTest.java
  *
  * json-pointer  Java implementation of JSON Pointer
- * Copyright (c) 2020 Peter Wall
+ * Copyright (c) 2020, 2021 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -272,6 +272,11 @@ public class JSONPointerTest {
         assertEquals("first", createPointer("/first/second").parent().getCurrent());
         assertEquals("2", createPointer("/first/2").getCurrent());
         assertNull(JSONPointer.root.getCurrent());
+    }
+
+    @Test
+    public void shouldReturnFalseForExistsWithNullBase() {
+        assertFalse(JSONPointer.root.exists(null));
     }
 
     private static JSONPointer createPointer(String str) {
