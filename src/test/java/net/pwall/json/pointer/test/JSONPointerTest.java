@@ -279,6 +279,23 @@ public class JSONPointerTest {
         assertFalse(JSONPointer.root.exists(null));
     }
 
+    @Test
+    public void shouldLocateChildInNestedObject() {
+        JSONObject obj1 = new JSONObject();
+        JSONObject obj2 = new JSONObject();
+        obj1.put("aaa", obj2);
+        assertEquals(createPointer("/aaa"), JSONPointer.root.locateChild(obj1, obj2));
+        JSONString str1 = new JSONString("xyz");
+        obj2.put("bbb", str1);
+        assertEquals(createPointer("/aaa/bbb"), JSONPointer.root.locateChild(obj1, str1));
+        assertEquals(createPointer("/bbb"), JSONPointer.root.locateChild(obj2, str1));
+        JSONInteger int1 = new JSONInteger(123);
+        JSONInteger int2 = new JSONInteger(456);
+        JSONArray array1 = new JSONArray(int1, int2);
+        obj2.put("ccc", array1);
+        assertEquals(createPointer("/aaa/ccc/1"), JSONPointer.root.locateChild(obj1, int2));
+    }
+
     private static JSONPointer createPointer(String str) {
         return new JSONPointer(str);
     }

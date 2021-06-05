@@ -413,6 +413,39 @@ public class JSONPointer {
     }
 
     /**
+     * Attempt to locate the specified child {@link JSONValue} within a nested structure.  The function will return a
+     * {@link JSONPointer} to the target, or {@code null} if the target can not be located.
+     *
+     * Note that this will perform a depth-first search of the entire structure, comparing on object identity, not
+     * equality.
+     *
+     * @param   value   the base {@link JSONValue} within which to search
+     * @param   target  the target of the search
+     * @return          a {@code JSONPointer} to locate the target in the base value
+     */
+    public JSONPointer locateChild(JSONValue value, JSONValue target) {
+        if (value == target)
+            return this;
+        if (value instanceof JSONMapping) {
+            JSONMapping<?> mapping = (JSONMapping<?>)value;
+            for (String key : mapping.keySet()) {
+                JSONPointer nested = child(key).locateChild(mapping.get(key), target);
+                if (nested != null)
+                    return nested;
+            }
+        }
+        else if (value instanceof JSONSequence) {
+            JSONSequence<?> sequence = (JSONSequence<?>)value;
+            for (int i = 0, n = sequence.size(); i < n; i++) {
+                JSONPointer nested = child(i).locateChild(sequence.get(i), target);
+                if (nested != null)
+                    return nested;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Encode a string for use in a URI.  This conversion uses "%20" to encode spaces rather than "+", because that is
      * the form used in the JSON Pointer specification.
      *

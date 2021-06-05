@@ -245,6 +245,38 @@ public class JSONReference extends JSONPointer {
     }
 
     /**
+     * Attempt to locate the specified child {@link JSONValue} within a nested structure.  The function will return a
+     * {@link JSONReference} to the target, or {@code null} if the target can not be located.
+     *
+     * Note that this will perform a depth-first search of the entire structure, comparing on object identity, not
+     * equality.
+     *
+     * @param   target  the target of the search
+     * @return          a {@code JSONReference} referring to the base value and the target
+     */
+    public JSONReference locateChild(JSONValue target) {
+        if (value == target)
+            return this;
+        if (value instanceof JSONMapping) {
+            JSONMapping<?> mapping = (JSONMapping<?>)value;
+            for (String key : mapping.keySet()) {
+                JSONReference nested = child(key).locateChild(target);
+                if (nested != null)
+                    return nested;
+            }
+        }
+        else if (value instanceof JSONSequence) {
+            JSONSequence<?> sequence = (JSONSequence<?>)value;
+            for (int i = 0, n = sequence.size(); i < n; i++) {
+                JSONReference nested = child(i).locateChild(target);
+                if (nested != null)
+                    return nested;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Compare two JSON references for equality.  The references are equal only if the pointers are equal and the base
      * values refer to the <b>same</b> object.
      *

@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.2] - 2021-06-05
+### Changed
+- `JSONPointer`, `JSONReference`: added `locateChild` functions
+
 ## [2.1] - 2021-06-01
 ### Changed
 - `JSONPointer`, `JSONReference`: changed to treat dereferencing of null as invalid

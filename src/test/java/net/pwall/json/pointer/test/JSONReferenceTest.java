@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import net.pwall.json.JSON;
+import net.pwall.json.JSONArray;
 import net.pwall.json.JSONInteger;
 import net.pwall.json.JSONMapping;
 import net.pwall.json.JSONObject;
@@ -152,6 +153,23 @@ public class JSONReferenceTest {
         assertFalse(testReference1.isValid());
         JSONReference testReference2 = new JSONReference(null, JSONPointer.root);
         assertFalse(testReference2.isValid());
+    }
+
+    @Test
+    public void shouldLocateChildInNestedObject() {
+        JSONObject obj1 = new JSONObject();
+        JSONObject obj2 = new JSONObject();
+        obj1.put("aaa", obj2);
+        assertEquals(new JSONReference(obj1, "/aaa"), (new JSONReference(obj1)).locateChild(obj2));
+        JSONString str1 = new JSONString("xyz");
+        obj2.put("bbb", str1);
+        assertEquals(new JSONReference(obj1, "/aaa/bbb"), (new JSONReference(obj1)).locateChild(str1));
+        assertEquals(new JSONReference(obj2, "/bbb"), (new JSONReference(obj2)).locateChild(str1));
+        JSONInteger int1 = new JSONInteger(123);
+        JSONInteger int2 = new JSONInteger(456);
+        JSONArray array1 = new JSONArray(int1, int2);
+        obj2.put("ccc", array1);
+        assertEquals(new JSONReference(obj1, "/aaa/ccc/1"), (new JSONReference(obj1)).locateChild(int2));
     }
 
     @Test

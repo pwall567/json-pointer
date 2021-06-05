@@ -42,6 +42,12 @@ To navigate to a child array element:
 ```
 (the result of the last two operations is a pointer equivalent to the pointer in the first example).
 
+To create a pointer to a specified child value within a structure:
+```java
+    JSONPointer childPointer = JSONPointer.root.locateChild(structure, target);
+```
+(This will perform a depth-first search of the JSON structure, so it should be used only when there is no alternative.)
+
 ## `JSONReference`
 
 A `JSONReference` is a combination of a `JSONPointer` and a `JSONValue`.
@@ -79,27 +85,33 @@ To test whether the reference has a nominated child:
     }
 ```
 
+To create a reference to a specified child value:
+```java
+    JSONReference childRef = baseRef.locateChild(target);
+```
+(This will perform a depth-first search of the JSON structure, so it should be used only when there is no alternative.)
+
 ## Dependency Specification
 
-The latest version of the library is 2.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>2.1</version>
+      <version>2.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:2.1'
+    implementation 'net.pwall.json:json-pointer:2.2'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:2.1")
+    implementation("net.pwall.json:json-pointer:2.2")
 ```
 
 Peter Wall
 
-2021-06-01
+2021-06-05
