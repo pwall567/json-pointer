@@ -30,6 +30,11 @@ import java.util.function.Supplier;
 import net.pwall.json.JSONMapping;
 import net.pwall.json.JSONSequence;
 import net.pwall.json.JSONValue;
+import net.pwall.pipeline.AbstractIntPipeline;
+import net.pwall.pipeline.IntAcceptor;
+import net.pwall.pipeline.StringAcceptor;
+import net.pwall.pipeline.codec.CodePoint_UTF8;
+import net.pwall.pipeline.uri.SchemaURIEncoder;
 import net.pwall.util.CharMapper;
 import net.pwall.util.CharUnmapper;
 import net.pwall.util.Strings;
@@ -170,8 +175,17 @@ public class JSONPointer {
     public String toURIFragment() {
         StringBuilder sb = new StringBuilder();
         sb.append('#');
-        for (String token : tokens)
-            sb.append('/').append(encodeURI(escapeToken(token)));
+        EscapePipeline<String> pipeline =
+                new EscapePipeline<>(new CodePoint_UTF8<>(new SchemaURIEncoder<>(new StringAcceptor(sb))));
+        try {
+            for (String token : tokens) {
+                sb.append('/');
+                pipeline.accept(token);
+            }
+        }
+        catch (Exception ignore) {
+            // Can't happen
+        }
         return sb.toString();
     }
 
@@ -532,5 +546,27 @@ public class JSONPointer {
         }
 
     };
+
+    public static class EscapePipeline<R> extends AbstractIntPipeline<R> {
+
+        public EscapePipeline(IntAcceptor<R> next) {
+            super(next);
+        }
+
+        @Override
+        public void acceptInt(int value) throws Exception {
+            if (value == '~') {
+                emit('~');
+                emit('0');
+            }
+            else if (value == '/') {
+                emit('~');
+                emit('1');
+            }
+            else
+                emit(value);
+        }
+
+    }
 
 }

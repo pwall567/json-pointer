@@ -1,6 +1,6 @@
 # json-pointer
 
-[![Build Status](https://travis-ci.org/pwall567/json-pointer.svg?branch=main)](https://travis-ci.org/pwall567/json-pointer)
+[![Build Status](https://travis-ci.com/pwall567/json-pointer.svg?branch=main)](https://travis-ci.com/github/pwall567/json-pointer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://img.shields.io/maven-central/v/net.pwall.json/json-pointer?label=Maven%20Central)](https://search.maven.org/search?q=g:%22net.pwall.json%22%20AND%20a:%22json-pointer%22)
 
@@ -93,25 +93,25 @@ To create a reference to a specified child value:
 
 ## Dependency Specification
 
-The latest version of the library is 2.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.3, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>2.2</version>
+      <version>2.3</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:2.2'
+    implementation 'net.pwall.json:json-pointer:2.3'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:2.2")
+    implementation("net.pwall.json:json-pointer:2.3")
 ```
 
 Peter Wall
 
-2021-06-05
+2022-10-16

@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.3] - 2022-10-16
+### Changed
+- `JSONPointer`: changed to use `pipeline` library for pointer escaping
+- `pom.xml`: bumped dependency versions
+
 ## [2.2] - 2021-06-05
 ### Changed
 - `JSONPointer`, `JSONReference`: added `locateChild` functions
