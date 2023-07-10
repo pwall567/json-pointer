@@ -554,7 +554,7 @@ public class JSONPointer {
         }
 
         @Override
-        public void acceptInt(int value) throws Exception {
+        public void acceptInt(int value) {
             if (value == '~') {
                 emit('~');
                 emit('0');

@@ -93,25 +93,25 @@ To create a reference to a specified child value:
 
 ## Dependency Specification
 
-The latest version of the library is 2.3, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.4, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-pointer</artifactId>
-      <version>2.3</version>
+      <version>2.4</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation 'net.pwall.json:json-pointer:2.3'
+    implementation 'net.pwall.json:json-pointer:2.4'
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("net.pwall.json:json-pointer:2.3")
+    implementation("net.pwall.json:json-pointer:2.4")
 ```
 
 Peter Wall
 
-2022-10-16
+2023-07-10

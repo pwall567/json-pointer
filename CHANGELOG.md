@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.4] - 2023-07-10
+### Changed
+- `pom.xml`: bumped dependency versions
+
 ## [2.3] - 2022-10-16
 ### Changed
 - `JSONPointer`: changed to use `pipeline` library for pointer escaping
